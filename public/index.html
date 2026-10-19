@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlayZone — Tienda de Juegos</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="brand" onclick="location.href='/'">
+      <span class="logo">▶</span> PlayZone
+    </div>
+    <nav class="nav">
+      <button type="button" class="nav-btn active" data-vista="tienda">Tienda</button>
+      <button type="button" class="nav-btn" data-vista="biblioteca">Biblioteca</button>
+      <button type="button" class="nav-btn" data-vista="chat">Comunidad</button>
+      <button type="button" class="nav-btn" data-vista="dms">Privados</button>
+      <button type="button" class="nav-btn" data-vista="ai">IA</button>
+      <button type="button" class="nav-btn" data-vista="streams">Streams</button>
+      <button type="button" class="nav-btn hidden" data-vista="admin" id="nav-admin">Admin</button>
+    </nav>
+    <div class="header-right">
+      <button type="button" id="btn-carrito" class="btn ghost">🛒 <span id="cart-count">0</span></button>
+      <div id="user-area"></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section id="vista-tienda" class="vista activa">
+      <div class="hero">
+        <h1>Catálogo de videojuegos</h1>
+        <p>Compra, juega y descarga · <strong><!--GAMES_COUNT--> juegos</strong></p>
+      </div>
+      <div class="search-bar">
+        <input type="search" id="search-games" placeholder="Buscar juegos (ej. Grann)..." autocomplete="off" />
+        <button type="button" class="btn primary" id="btn-search">Buscar</button>
+      </div>
+      <p id="search-empty" class="muted hidden">No se encontraron juegos.</p>
+      <div class="filtros" id="filtros">
+        <button type="button" class="chip active" data-cat="all">Todos</button>
+        <button type="button" class="chip" data-cat="RPG">RPG</button>
+        <button type="button" class="chip" data-cat="Acción">Acción</button>
+        <button type="button" class="chip" data-cat="Terror">Terror</button>
+        <button type="button" class="chip" data-cat="Carreras">Carreras</button>
+        <button type="button" class="chip" data-cat="Aventura">Aventura</button>
+        <button type="button" class="chip" data-cat="PS4">PS4</button>
+      </div>
+      <div id="game-grid" class="grid"><!--GAMES_SSR--></div>
+    </section>
+
+    <section id="vista-biblioteca" class="vista">
+      <h2>Mi biblioteca</h2>
+      <div id="library-grid" class="grid"></div>
+      <p id="library-empty" class="muted">Inicia sesión y añade juegos.</p>
+    </section>
+
+    <section id="vista-carrito" class="vista">
+      <h2>Carrito</h2>
+      <div id="cart-list"></div>
+      <div class="cart-footer">
+        <strong>Total: $<span id="cart-total">0.00</span></strong>
+        <label style="display:block;margin:.5rem 0 .25rem">Método de pago</label>
+        <select id="payment-method" name="paymentMethod" style="width:100%;margin-bottom:.75rem;padding:.5rem;border-radius:8px">
+          <option value="tarjeta">Tarjeta débito/crédito</option>
+          <option value="pse">PSE (Colombia)</option>
+          <option value="nequi">Nequi</option>
+          <option value="paypal">PayPal</option>
+        </select>
+        <p class="muted" style="font-size:.8rem">Modo demo: no se cobra dinero real. La compra se registra y el juego queda en tu biblioteca para descargar.</p>
+        <button type="button" class="btn primary" id="btn-checkout">Pagar y obtener juegos</button>
+      </div>
+    </section>
+
+    <section id="vista-chat" class="vista">
+      <h2>Chat de la comunidad</h2>
+      <div id="chat-box" class="chat-box"></div>
+      <form id="chat-form" class="chat-form">
+        <input id="chat-input" type="text" placeholder="Mensaje a toda la comunidad..." maxlength="500" />
+        <button class="btn primary" type="submit">Enviar</button>
+      </form>
+    </section>
+
+    <section id="vista-dms" class="vista">
+      <h2>Chats privados</h2>
+      <div class="dm-layout">
+        <aside class="dm-sidebar">
+          <h3>Usuarios</h3>
+          <div id="dm-users"></div>
+          <h3>Conversaciones</h3>
+          <div id="dm-list"></div>
+        </aside>
+        <div class="dm-main">
+          <div id="dm-title" class="muted">Selecciona un usuario o chat</div>
+          <div id="dm-box" class="chat-box"></div>
+          <form id="dm-form" class="chat-form hidden">
+            <input id="dm-input" type="text" placeholder="Mensaje privado..." maxlength="1000" />
+            <button class="btn primary" type="submit">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="vista-ai" class="vista">
+      <div class="row-between">
+        <h2>Asistente IA</h2>
+        <button type="button" class="btn ghost" id="btn-ai-clear">Borrar historial</button>
+      </div>
+      <div id="ai-box" class="chat-box"></div>
+      <form id="ai-form" class="chat-form">
+        <input id="ai-input" type="text" placeholder="Pregunta sobre PlayZone..." maxlength="500" />
+        <button class="btn primary" type="submit">Preguntar</button>
+      </form>
+    </section>
+
+    <section id="vista-streams" class="vista">
+      <div class="row-between">
+        <h2>Streams</h2>
+        <button type="button" class="btn primary" id="btn-stream">Iniciar stream</button>
+      </div>
+      <div id="streams-list" class="grid"></div>
+    </section>
+
+    <section id="vista-perfil" class="vista">
+      <h2>Mi perfil</h2>
+      <div class="auth-card wide">
+        <form id="form-perfil">
+          <label>Usuario</label>
+          <input name="username" required />
+          <label>Nombre</label>
+          <input name="firstName" />
+          <label>Apellido</label>
+          <input name="lastName" />
+          <label>Correo (no editable)</label>
+          <input name="email" disabled />
+          <label>Rol</label>
+          <input name="role" disabled />
+          <button class="btn primary full" type="submit">Guardar cambios</button>
+        </form>
+        <hr />
+        <button type="button" class="btn danger full" id="btn-delete-account">Eliminar mi cuenta</button>
+      </div>
+    </section>
+
+    <section id="vista-admin" class="vista">
+      <h2>Panel administrador</h2>
+      <div class="stats-grid" id="admin-stats"></div>
+      <h3>Agregar / editar juego</h3>
+      <form id="form-game" class="auth-card wide">
+        <input type="hidden" name="id" />
+        <label>Título *</label>
+        <input name="title" required />
+        <label>URL de imagen * (obligatoria)</label>
+        <input name="image" type="url" required placeholder="https://..." />
+        <label>Precio</label>
+        <input name="price" type="number" min="0" step="0.01" value="0" />
+        <label>Categoría</label>
+        <input name="category" value="Otros" />
+        <label>Tags (separados por coma)</label>
+        <input name="tags" placeholder="Gratis, Multijugador" />
+        <label>Descripción</label>
+        <textarea name="description" rows="3"></textarea>
+        <label>URL de descarga</label>
+        <input name="downloadUrl" type="hidden" value="" />
+        <label>Archivo del juego (se descarga desde PlayZone)</label>
+        <input name="gameFile" type="file" accept=".zip,.rar,.7z,.tar,.gz,.tgz,.apk,.AppImage" />
+        <p class="muted" style="font-size:.8rem;margin-top:.25rem">Sube el .zip / instalador. El jugador lo bajará desde este servidor, no desde un link externo.</p>
+        <label>Licencia</label>
+        <input name="license" />
+        <button class="btn primary full" type="submit">Guardar juego</button>
+        <button class="btn ghost full" type="button" id="btn-game-reset">Limpiar formulario</button>
+      </form>
+      <h3>Juegos en catálogo</h3>
+      <div id="admin-games" class="admin-list"></div>
+    </section>
+
+    <section id="vista-detalle" class="vista">
+      <button type="button" class="btn ghost" onclick="mostrarVista('tienda')">← Volver</button>
+      <div id="detalle-contenido"></div>
+    </section>
+
+    <section id="vista-login" class="vista">
+      <div class="auth-card">
+        <h2>Iniciar sesión</h2>
+        <form id="form-login">
+          <label>Correo</label>
+          <input name="email" type="email" required />
+          <label>Contraseña</label>
+          <input name="password" type="password" required />
+          <button class="btn primary full" type="submit">Entrar</button>
+        </form>
+        <p class="muted"><a href="#" id="link-reg">Crear cuenta</a> · <a href="#" id="link-forgot">¿Olvidaste tu contraseña?</a></p>
+      </div>
+    </section>
+
+    <section id="vista-registro" class="vista">
+      <div class="auth-card">
+        <h2>Crear cuenta</h2>
+        <form id="form-registro">
+          <label>Usuario</label>
+          <input name="username" required />
+          <label>Correo</label>
+          <input name="email" type="email" required />
+          <label>Contraseña</label>
+          <input name="password" type="password" required minlength="4" />
+          <label>Nombre</label>
+          <input name="firstName" />
+          <button class="btn primary full" type="submit">Registrarme</button>
+        </form>
+        <p class="muted"><a href="#" id="link-login">Ya tengo cuenta</a></p>
+      </div>
+    </section>
+
+    <section id="vista-forgot" class="vista">
+      <div class="auth-card">
+        <h2>Recuperar contraseña</h2>
+        <form id="form-forgot">
+          <label>Correo de la cuenta</label>
+          <input name="email" type="email" required />
+          <button class="btn primary full" type="submit">Generar token</button>
+        </form>
+        <div id="forgot-result" class="muted"></div>
+        <hr />
+        <h3>Restablecer con token</h3>
+        <form id="form-reset">
+          <label>Token</label>
+          <input name="token" required />
+          <label>Nueva contraseña</label>
+          <input name="password" type="password" required minlength="4" />
+          <button class="btn primary full" type="submit">Cambiar contraseña</button>
+        </form>
+        <p class="muted"><a href="#" id="link-login2">Volver a login</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">PlayZone · azul + púrpura · Node.js</footer>
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

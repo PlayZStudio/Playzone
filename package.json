@@ -1,0 +1,17 @@
+{
+  "name": "playzone",
+  "version": "1.1.0",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "db:schema": "mysql -u root -p < sql/schema.sql",
+    "db:seed": "mysql -u root -p < sql/seed.sql"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.5"
+  }
+}
